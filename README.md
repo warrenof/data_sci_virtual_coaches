@@ -1,5 +1,7 @@
-# Data Science Virtual Coach Prompts
+![A Robot Guru Hallucinating on a Mountain](assets/data_sci_robo_guru.png)
 
+# Data Science Virtual Coach Prompts
+---
 A collection of system prompts designed as specialised coaches to help students work through Data Science and AI problems.
 Each coach is optimised for learning — expect to be guided toward solutions rather than handed them.
 
