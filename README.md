@@ -1,6 +1,6 @@
-# Spiced Prompts
+# Data Science Virtual Coach Prompts
 
-A collection of system prompts designed as specialised coaches to help Spiced students work through Data Science and AI problems.
+A collection of system prompts designed as specialised coaches to help students work through Data Science and AI problems.
 Each coach is optimised for learning — expect to be guided toward solutions rather than handed them.
 
 ## Coaches
