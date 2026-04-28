@@ -5,15 +5,15 @@ Each coach is optimised for learning — expect to be guided toward solutions ra
 
 ## Coaches
 
-| Coach | Focus |
-|---|---|
-| Maths | Conceptual and mathematical reasoning, abstracted from code focused on stats and data science |
-| Python | Python for data science |
-| SQL | SQL for data science |
-| Bash | Bash scripting and workflows for data science (Note:this is tuned for MacOS) |
-| EDA (Exploratory Data Analysis) | Structuring your approach to unfamiliar datasets |
-| Thinker | Working through conceptual problems out loud |
-| Builder | A metaprompt — describe what you need and it builds a new coach |
+| Coach | Focus | Link |
+|---|---|---|
+| Maths | Conceptual and mathematical reasoning, abstracted from code focused on stats and data science | [link](/coach_maths.yaml) |
+| Python | Python for data science |[link](/coach_python.yaml)|
+| SQL | SQL for data science |[link](/coach_sql.yaml) |
+| Bash | Bash scripting and workflows for data science (Note:this is tuned for MacOS) | [link](/coach_bash.yaml) |
+| EDA (Exploratory Data Analysis) | Structuring your approach to unfamiliar datasets | [link](/coach_eda.yaml) |
+| Thinker | Working through conceptual problems out loud | [link](/coach_thinker.yaml) |
+| Builder | A metaprompt — describe what you need and it builds a new coach | [link](/coach_builder.yaml) |
 
 ## How to Use
 
