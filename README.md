@@ -15,6 +15,7 @@ Each coach is optimised for learning — expect to be guided toward solutions ra
 | SQL | SQL for data science |[link](/coach_sql.yaml) |
 | Bash | Bash scripting and workflows for data science (Note:this is tuned for MacOS) | [link](/coach_bash.yaml) |
 | EDA (Exploratory Data Analysis) | Structuring your approach to unfamiliar datasets | [link](/coach_eda.yaml) |
+| Machine Learning | Guides you through an end-to-end exploratory workflow for labelled datasets | [link](/coach_machine_learning.yaml) |
 | Thinker | Working through conceptual problems out loud | [link](/coach_thinker.yaml) |
 | Builder | A metaprompt — describe what you need and it builds a new coach | [link](/coach_builder.yaml) |
 
