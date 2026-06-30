@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS Problem-Solving Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0a0e17;
+    --surface:  #111827;
+    --border:   #1e2d40;
+    --border2:  #243447;
+    --text:     #c9d4e0;
+    --muted:    #4a6080;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Inter', sans-serif;
+    --phase:    #1a3a5c;
+    --phase-h:  #1e4a72;
+    --ok:       #0d3d2a;
+    --ok-acc:   #10b981;
+    --warn:     #3d1a0a;
+    --warn-acc: #f97316;
+    --stop:     #3d0a0a;
+    --stop-acc: #ef4444;
+    --info:     #0d2a3d;
+    --info-acc: #38bdf8;
+    --done-acc: #6366f1;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,14,23,0.97);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    height: 48px;
+  }
+
+  .site-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+    border-right: 1px solid var(--border);
+    margin-right: 4px;
+  }
+
+  /* ── TABS ── */
+  .tab-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex: 1;
+  }
+
+  .tab-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 0 16px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--info-acc); border-bottom-color: var(--info-acc); }
+
+  .tab-badge {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--border2);
+    color: var(--muted);
+  }
+
+  .tab-btn.active .tab-badge { background: var(--info); color: var(--info-acc); }
+
+  /* ── HEADER RIGHT ── */
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 16px;
+    border-left: 1px solid var(--border);
+  }
+
+  .progress-track {
+    width: 80px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--info-acc), var(--done-acc));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .btn-sm {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-sm:hover { border-color: var(--info-acc); color: var(--info-acc); }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── WORKFLOW LAYOUT ── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ── PHASE CARD ── */
+  .phase {
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .phase.is-done { border-color: #1a3d2a; }
+  .phase.is-done .phase-header { background: #0d1f16; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .phase-header:hover { background: var(--phase-h); }
+
+  .phase-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 24px;
+  }
+
+  .phase-title {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2eaf4;
+    letter-spacing: 0.01em;
+  }
+
+  .phase-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 1px solid;
+  }
+
+  .tag-gate  { border-color: var(--stop-acc);  color: var(--stop-acc);  background: var(--stop);  }
+  .tag-check { border-color: var(--info-acc);  color: var(--info-acc);  background: var(--info);  }
+  .tag-build { border-color: var(--ok-acc);    color: var(--ok-acc);    background: var(--ok);    }
+  .tag-warn  { border-color: var(--warn-acc);  color: var(--warn-acc);  background: var(--warn);  }
+
+  .phase-chevron {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.2s;
+    font-family: var(--mono);
+  }
+
+  .phase.is-open .phase-chevron { transform: rotate(90deg); }
+
+  .done-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 10px;
+    color: transparent;
+    flex-shrink: 0;
+  }
+
+  .done-check:hover { border-color: var(--ok-acc); }
+  .phase.is-done .done-check {
+    background: var(--ok-acc);
+    border-color: var(--ok-acc);
+    color: #fff;
+  }
+
+  .phase-body {
+    display: none;
+    padding: 0 16px 20px;
+    background: #0d1520;
+    border-top: 1px solid var(--border);
+  }
+
+  .phase.is-open .phase-body { display: block; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 20px 0 10px;
+  }
+
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text); line-height: 1.5; }
+  .checklist li::before { content: '□'; font-family: var(--mono); color: var(--muted); flex-shrink: 0; margin-top: 1px; }
+
+  .decision-block {
+    margin: 12px 0;
+    border-left: 2px solid var(--info-acc);
+    padding: 10px 14px;
+    background: var(--info);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+  }
+
+  .decision-block .q {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--info-acc);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .branch { display: flex; gap: 8px; margin-top: 6px; align-items: flex-start; font-size: 12px; }
+  .branch-label { font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
+  .branch-yes .branch-label { background: var(--ok); color: var(--ok-acc); }
+  .branch-no  .branch-label { background: var(--stop); color: var(--stop-acc); }
+
+  .warn-block { margin: 12px 0; border-left: 2px solid var(--warn-acc); padding: 10px 14px; background: var(--warn); border-radius: 0 4px 4px 0; font-size: 13px; }
+  .warn-block .w-head { font-family: var(--mono); font-size: 11px; color: var(--warn-acc); font-weight: 700; margin-bottom: 4px; }
+
+  .stop-block { margin: 12px 0; border-left: 2px solid var(--stop-acc); padding: 10px 14px; background: var(--stop); border-radius: 0 4px 4px 0; font-size: 13px; }
+  .stop-block .s-head { font-family: var(--mono); font-size: 11px; color: var(--stop-acc); font-weight: 700; margin-bottom: 4px; }
+
+  .rule-block { margin: 12px 0; border: 1px dashed var(--border2); padding: 10px 14px; border-radius: 4px; font-size: 12px; color: #8aa0b8; }
+  .rule-block strong { font-family: var(--mono); color: #a0b4c8; display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  code { font-family: var(--mono); font-size: 11px; background: #1a2535; padding: 1px 5px; border-radius: 3px; color: #a5d8ff; }
+
+  .phase-connector { text-align: center; font-family: var(--mono); font-size: 11px; color: var(--border2); margin: 2px 0; }
+
+  /* ── ALGO TAB ── */
+  .algo-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 24px 80px;
+  }
+
+  .algo-toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .search-wrap { position: relative; flex: 1; min-width: 160px; }
+  .search-wrap input {
+    width: 100%;
+    padding: 7px 12px 7px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-wrap input:focus { border-color: var(--info-acc); }
+  .search-wrap input::placeholder { color: var(--muted); }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; font-family: var(--mono); }
+
+  .algo-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 4px 11px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--text); color: var(--text); }
+  .filter-btn.active { background: var(--info); color: var(--info-acc); border-color: var(--info-acc); }
+
+  .algo-count { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; margin-left: auto; align-self: center; }
+
+  .algo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 8px;
+  }
+
+  .algo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .algo-card:hover { border-color: var(--border2); }
+  .algo-card.is-open { border-color: var(--info-acc); }
+
+  .algo-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 14px 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .algo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+
+  .algo-meta { flex: 1; min-width: 0; }
+  .algo-name { font-size: 13px; font-weight: 600; color: #e2eaf4; margin-bottom: 3px; }
+  .algo-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  .algo-chevron { color: var(--muted); font-size: 11px; transition: transform 0.2s; flex-shrink: 0; margin-top: 3px; font-family: var(--mono); }
+  .algo-card.is-open .algo-chevron { transform: rotate(90deg); }
+
+  .algo-tags { display: flex; gap: 5px; flex-wrap: wrap; padding: 0 14px 11px; }
+  .algo-tag {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .at-tree     { background: var(--ok);   color: var(--ok-acc);   border-color: var(--ok-acc); }
+  .at-linear   { background: var(--info);  color: var(--info-acc); border-color: var(--info-acc); }
+  .at-bayesian { background: #1e0a3d; color: #a78bfa; border-color: #7c3aed; }
+  .at-instance { background: var(--warn);  color: var(--warn-acc); border-color: var(--warn-acc); }
+  .at-neural   { background: var(--stop);  color: var(--stop-acc); border-color: var(--stop-acc); }
+  .at-ensemble { background: var(--ok);    color: var(--ok-acc);   border-color: var(--ok-acc); }
+  .at-kernel   { background: #1e1a0a; color: #fbbf24; border-color: #d97706; }
+
+  .algo-detail {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 14px 14px 16px;
+    background: #0d1520;
+  }
+  .algo-card.is-open .algo-detail { display: block; }
+
+  .detail-section { margin-bottom: 12px; }
+  .detail-section:last-child { margin-bottom: 0; }
+  .detail-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .detail-text { font-size: 12px; color: var(--text); line-height: 1.55; }
+
+  .sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+
+  .sw-box { padding: 9px 11px; border-radius: 5px; font-size: 12px; line-height: 1.45; }
+  .sw-box .sw-label { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+  .sw-str { background: var(--ok);   color: #86efac; }
+  .sw-str .sw-label { color: var(--ok-acc); }
+  .sw-wk  { background: var(--stop); color: #fca5a5; }
+  .sw-wk  .sw-label { color: var(--stop-acc); }
+
+  .use-when-box {
+    background: var(--info);
+    border-left: 2px solid var(--info-acc);
+    border-radius: 0 4px 4px 0;
+    padding: 9px 11px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .lib-list { display: flex; flex-direction: column; gap: 5px; }
+  .lib-row { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; }
+  .lib-name { font-family: var(--mono); font-size: 11px; color: var(--info-acc); min-width: 110px; flex-shrink: 0; padding-top: 1px; }
+  .lib-note { color: var(--text); line-height: 1.45; }
+
+  .algo-empty { text-align: center; padding: 48px 16px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-title">DS Ref</div>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('workflow', this)">
+      Workflow <span class="tab-badge">14</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('algos', this)">
+      Algorithms <span class="tab-badge">13</span>
+    </button>
+  </nav>
+
+  <div class="header-right" id="workflowControls">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">0 / 14</span>
+    <button class="btn-sm" onclick="expandAll()">expand</button>
+    <button class="btn-sm" onclick="collapseAll()">collapse</button>
+    <button class="btn-sm" onclick="resetProgress()">reset</button>
+  </div>
+
+  <div class="header-right" id="algoControls" style="display:none;">
+    <span class="algo-count" id="algoCountHeader">13 algorithms</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 1 — WORKFLOW
+════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab-workflow">
+<div class="container" id="phaseContainer">
+
+  <!-- ① EDA -->
+  <div class="phase" id="phase-1">
+    <div class="phase-header" onclick="togglePhase('phase-1')">
+      <span class="phase-num">01</span>
+      <span class="phase-title">EDA — Know Your Data Before Modelling</span>
+      <span class="phase-tag tag-gate">GATE</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-1')">✓</div>
+    </div>
+    <div class="phase-body">
+      <p class="section-label">Run in order</p>
+      <ul class="checklist">
+        <li>Schema audit — n_rows, n_cols, dtypes, null counts per column</li>
+        <li>Target analysis — skew, kurtosis, range, outliers (plot histogram + box plot)</li>
+        <li>Feature audit — categorical cardinality, binary prevalence, constant/near-constant cols</li>
+        <li>Duplicate row analysis — identical feature vectors with different y values</li>
+        <li>Univariate signal scan — correlation / mutual info each feature vs y</li>
+        <li>Train / test marginal distribution comparison — prevalence shifts, unseen categories</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Target skew &gt; 1.5?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Flag log / sqrt / Box-Cox — don't apply yet. Test in Phase 5.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Proceed. Revisit if residuals are heteroscedastic after first model.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Duplicate rows with different y?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Compute theoretical R² ceiling: <code>1 − within_group_var / total_var</code>. This is your north star — never optimise past it.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> No hard ceiling from noise. Ceiling is governed by feature completeness.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Any single feature explains &gt; 30% variance?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Dominant feature detected. All encoding decisions in Phase 4 hinge on this. Flag it now.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Signal is distributed. Ensemble diversity matters more than encoding choice.</div>
+      </div>
+      <div class="rule-block">
+        <strong>Rule of thumb</strong>
+        Within-group skew increasing after conditioning on dominant feature = Simpson's Paradox. Log(y) fixes global heteroscedasticity but not within-group structure skew. Note it — don't act yet.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ② CV DESIGN -->
+  <div class="phase" id="phase-2">
+    <div class="phase-header" onclick="togglePhase('phase-2')">
+      <span class="phase-num">02</span>
+      <span class="phase-title">CV Design — Validate Setup Before Any Model Runs</span>
+      <span class="phase-tag tag-gate">GATE</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-2')">✓</div>
+    </div>
+    <div class="phase-body">
+      <div class="decision-block">
+        <div class="q">? Duplicate rows in data?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> GroupKFold on full-feature-vector hash. Keeps duplicates in same fold — prevents leakage.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Standard KFold or StratifiedKFold depending on target balance.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Dominant categorical feature (from Phase 1)?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Upgrade to StratifiedGroupKFold — stratify on dominant category, group on hash. Both problems solved simultaneously.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> GroupKFold or KFold is sufficient.</div>
+      </div>
+      <p class="section-label">Fold sanity checks — run before fitting any model</p>
+      <ul class="checklist">
+        <li>Plot target distribution per fold — mean, std, min, max</li>
+        <li>Plot dominant feature category counts per fold</li>
+        <li>Plot outlier distribution per fold — extreme y values concentrated in one fold?</li>
+        <li>Fit null model per fold (predict fold mean) — verify R² ≈ 0 across all folds</li>
+      </ul>
+      <div class="stop-block">
+        <div class="s-head">⛔ STOP — CV setup is broken if:</div>
+        Any fold mean deviates &gt; 2× the inter-fold std from the grand mean, OR null R² is non-uniform across folds. Redesign fold strategy before proceeding. Do not trust any scores from a broken CV.
+      </div>
+      <div class="rule-block">
+        <strong>Rule of thumb</strong>
+        The fold composition check takes 10 minutes. The alternative is discovering your CV is broken after submitting to a leaderboard.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ③ BASELINE -->
+  <div class="phase" id="phase-3">
+    <div class="phase-header" onclick="togglePhase('phase-3')">
+      <span class="phase-num">03</span>
+      <span class="phase-title">Baseline — Establish the Signal Floor</span>
+      <span class="phase-tag tag-build">BUILD</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-3')">✓</div>
+    </div>
+    <div class="phase-body">
+      <ul class="checklist">
+        <li>Fit simplest possible model — dominant feature only, default params, no tuning</li>
+        <li>Record OOF R² and per-fold scores. This number is your signal floor.</li>
+        <li>Add top-N features by mutual info one at a time — measure delta R² per addition</li>
+        <li>Stop adding when marginal gain &lt; 0.005 R²</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? OOF std across folds &gt; 0.05?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> High variance — suspect CV setup or outlier placement issue. Return to Phase 2 before proceeding.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> CV is stable. Record the feature count at which gains plateau — this constrains Phase 10.</div>
+      </div>
+      <div class="rule-block">
+        <strong>Rule of thumb</strong>
+        The baseline model tells you what fraction of variance is recoverable without any engineering. If baseline is already within 0.05 of the theoretical ceiling, complexity has almost nowhere to go.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ④ ENCODING -->
+  <div class="phase" id="phase-4">
+    <div class="phase-header" onclick="togglePhase('phase-4')">
+      <span class="phase-num">04</span>
+      <span class="phase-title">Encoding Strategy — The Highest-Leverage Decision</span>
+      <span class="phase-tag tag-check">CHECK</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-4')">✓</div>
+    </div>
+    <div class="phase-body">
+      <p class="section-label">Test in parallel — same CV, same model</p>
+      <div class="decision-block">
+        <div class="q">? Tree-based model?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Test three encodings: Ordinal · Smoothed Target Encoding (alpha 10–20) · OHE. Compare OOF R² per encoding, inspect per-fold — don't just compare means.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Linear → OHE only. Neural → embeddings for high-cardinality, OHE for low.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Ordinal beats Target Encoding on dominant feature?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Model is reconstructing group structure from binary proxies via repeated splits. Check feature importance — a binary feature at &gt;30% importance is the tell. Ordinal encoding may be the ceiling for this model family.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> TE is working. Tune smoothing parameter. TE collapses category to group mean — verify that sub-group structure isn't lost (check residuals within category groups).</div>
+      </div>
+      <div class="warn-block">
+        <div class="w-head">⚠ TE leakage risk</div>
+        Target encoding must be fit inside each CV fold — never on the full training set. Fitting on full data leaks target information into validation folds and inflates OOF by 0.01–0.03.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑤ TARGET TRANSFORM -->
+  <div class="phase" id="phase-5">
+    <div class="phase-header" onclick="togglePhase('phase-5')">
+      <span class="phase-num">05</span>
+      <span class="phase-title">Target Transformation — When and Why</span>
+      <span class="phase-tag tag-check">CHECK</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-5')">✓</div>
+    </div>
+    <div class="phase-body">
+      <div class="decision-block">
+        <div class="q">? Skew flagged in Phase 1?</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Skip. Unlikely to help, adds inverse-transform complexity.</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Apply log1p, refit same model, compare OOF.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Delta R² &gt; 0.002 or RMSE visibly better?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Adopt log transform. Remember to <code>np.expm1()</code> predictions.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Model handles skew natively (e.g. CatBoost ordered TE, LightGBM leaf-wise). Don't force it.</div>
+      </div>
+      <div class="rule-block">
+        <strong>Rule of thumb</strong>
+        Log(y) helps when residual variance scales with the mean (heteroscedasticity). It does not fix within-group structural skew. If within-group skew increases after conditioning on dominant feature, log(y) is addressing the wrong thing.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑥ MODELLING -->
+  <div class="phase" id="phase-6">
+    <div class="phase-header" onclick="togglePhase('phase-6')">
+      <span class="phase-num">06</span>
+      <span class="phase-title">Modelling — Structured Complexity Ladder</span>
+      <span class="phase-tag tag-build">BUILD</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-6')">✓</div>
+    </div>
+    <div class="phase-body">
+      <p class="section-label">Climb the ladder — only go up when the previous rung plateaus</p>
+      <ul class="checklist">
+        <li>sklearn GBM, default params — fast, interpretable, strong baseline</li>
+        <li>LightGBM + XGBoost — test with best encoding per model from Phase 4</li>
+        <li>CatBoost — if categoricals are complex; test raw y vs log y explicitly</li>
+        <li>Record OOF R², per-fold scores, training time — build a comparison table</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Best model within 0.05 of theoretical ceiling?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> You're near the noise floor. Do not invest further in model complexity. Go to tuning, then blending.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Real headroom exists. Continue up the ladder before tuning.</div>
+      </div>
+      <div class="rule-block">
+        <strong>Rule of thumb</strong>
+        If learning curves plateau within the first 200 trees and don't improve with depth, signal is saturated. Complexity beyond that adds variance, not bias reduction.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑦ TUNING -->
+  <div class="phase" id="phase-7">
+    <div class="phase-header" onclick="togglePhase('phase-7')">
+      <span class="phase-num">07</span>
+      <span class="phase-title">Hyperparameter Tuning — Avoid Pathological Regions</span>
+      <span class="phase-tag tag-warn">PITFALL</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-7')">✓</div>
+    </div>
+    <div class="phase-body">
+      <p class="section-label">Sequence matters</p>
+      <ul class="checklist">
+        <li>Coarse grid first — 20–50 trials, wide ranges, log scale for learning rate</li>
+        <li>Plot learning curves for top configs — do trees converge before n_estimators limit?</li>
+        <li>Fine search only after coarse confirms sensible parameter region</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Learning rate &lt; 0.02 appearing in top configs?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Convergence trap — model needs far more trees than budget allows. Add <code>lr ≥ 0.02</code> floor, or scale n_estimators proportionally. Random search treats lr and n_estimators as independent; they are coupled.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Safe to proceed to fine search. Use Bayesian TPE or CMA-ES — both model parameter interactions that random search misses.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Fine search gain &gt; 0.003 R² over coarse?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Adopt fine-tuned params.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Coarse grid was sufficient. Don't over-invest in search — the returns are in the ensemble.</div>
+      </div>
+      <div class="warn-block">
+        <div class="w-head">⚠ Random search failure mode</div>
+        Random search is pathologically bad at learning dependencies between coupled parameters. If you must use it, constrain the search space with domain knowledge floors/ceilings before running. Bayesian TPE is almost always worth it for &gt;5 parameters.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑧ ENSEMBLE -->
+  <div class="phase" id="phase-8">
+    <div class="phase-header" onclick="togglePhase('phase-8')">
+      <span class="phase-num">08</span>
+      <span class="phase-title">Ensemble — Diversity Audit Before Blending</span>
+      <span class="phase-tag tag-check">CHECK</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-8')">✓</div>
+    </div>
+    <div class="phase-body">
+      <div class="warn-block">
+        <div class="w-head">⚠ Use OOF residual correlation — not prediction correlation</div>
+        Models can have near-identical predictions but different error patterns. Residual correlation is what determines whether blending adds value.
+      </div>
+      <div class="decision-block">
+        <div class="q">? Any pair OOF residual correlation &gt; 0.90?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Models are redundant — one adds no diversity. Blending them will not improve generalisation. Find a model with genuinely different inductive bias.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Blending is worthwhile. Start with equal weights, then grid search.</div>
+      </div>
+      <ul class="checklist">
+        <li>Grid search blend weights — minimise OOF MSE directly</li>
+        <li>Note: optimal weights rarely match individual accuracy rankings</li>
+        <li>Check: does weakest model improve OOF when added?</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Weakest model OOF residual r &lt; 0.70 with ensemble?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Include — even if individually weaker. Diverse errors improve stability on held-out data.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Exclude — redundant, not diverse. Adding it dilutes signal.</div>
+      </div>
+      <div class="rule-block">
+        <strong>What "genuinely different" means</strong>
+        Different library (LGB vs sklearn GBM) is not genuinely different if they use identical encodings. Genuinely different = different inductive bias: hierarchical / Bayesian / linear / rule-based.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑨ SATURATION -->
+  <div class="phase" id="phase-9">
+    <div class="phase-header" onclick="togglePhase('phase-9')">
+      <span class="phase-num">09</span>
+      <span class="phase-title">Blend Saturation Diagnosis</span>
+      <span class="phase-tag tag-check">CHECK</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-9')">✓</div>
+    </div>
+    <div class="phase-body">
+      <p class="section-label">Run this before investing in base model improvements</p>
+      <ul class="checklist">
+        <li>Improve one base model in isolation — record its individual OOF delta</li>
+        <li>Recompute full blend OOF with the improved model</li>
+        <li>Compare: how much of the individual gain propagated to the blend?</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Blend gain &lt; 20% of individual model gain?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Blend is saturated. Other models already cover this model's signal. Stop optimising that base model — seek structural diversity instead, or accept the current ceiling.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Blend not saturated. Continue optimising base models — gains are propagating.</div>
+      </div>
+      <div class="rule-block">
+        <strong>Why this happens</strong>
+        Saturation occurs because ensemble members have already covered the signal dimension you just improved. The blend only benefits from signals none of the other members cover.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑩ FEATURE ENGINEERING -->
+  <div class="phase" id="phase-10">
+    <div class="phase-header" onclick="togglePhase('phase-10')">
+      <span class="phase-num">10</span>
+      <span class="phase-title">Feature Engineering — Signal Hunting With Budget Awareness</span>
+      <span class="phase-tag tag-build">BUILD</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-10')">✓</div>
+    </div>
+    <div class="phase-body">
+      <div class="rule-block">
+        <strong>Compute FE budget before searching</strong>
+        At n training rows, dataset reliably supports ~n/10 to n/20 learnable parameters before regularisation is doing all the work. At n=4,209 that's ~200–400 effective parameters — roughly 50–100 interaction features.
+      </div>
+      <p class="section-label">Search residuals, not raw y</p>
+      <ul class="checklist">
+        <li>Compute within-dominant-group residuals from best current model</li>
+        <li>Correlate binary features with residuals — not with raw y</li>
+        <li>Most binary-y correlations are mediated by dominant feature — this removes that confound</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Residual correlations &gt; 0.15 exist?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Genuine FE candidates. Test within-group, add one at a time, measure OOF delta per feature.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Binary features don't add beyond what model finds natively. Move on.</div>
+      </div>
+      <div class="stop-block">
+        <div class="s-head">⛔ Stop adding features when OOF gain per feature &lt; 0.001</div>
+        You're fitting noise. The model will memorise the feature's correlation with this particular train split — it won't generalise.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑪ POST-PROCESSING -->
+  <div class="phase" id="phase-11">
+    <div class="phase-header" onclick="togglePhase('phase-11')">
+      <span class="phase-num">11</span>
+      <span class="phase-title">Post-Processing — High Risk, Handle With Care</span>
+      <span class="phase-tag tag-warn">PITFALL</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-11')">✓</div>
+    </div>
+    <div class="phase-body">
+      <div class="decision-block">
+        <div class="q">? Matched training rows in test set?</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> No post-processing needed here.</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Check group size for matched rows.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Training group size for matched rows ≥ 30?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Group mean may beat model prediction. Test on internal holdout before applying.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Do not replace model predictions. Group mean variance >> model variance at n &lt; 30.</div>
+      </div>
+      <div class="rule-block">
+        <strong>Bias-variance framing</strong>
+        Model prediction: low variance (trained on full data), some bias. Group mean at n=2–4: zero bias, enormous variance. Group mean only wins when n ≥ ~30 and within-group variance is genuinely low.
+      </div>
+      <div class="decision-block">
+        <div class="q">? Considering pseudo-labeling?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Only if model accuracy &gt; 0.90 AND there is clear, measurable distribution shift between train and unlabelled data. Otherwise OOF gain will be inflated — held-out performance will drop.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Skip. The risk of OOF inflation is high and real-world generalisation degradation is the typical outcome.</div>
+      </div>
+      <div class="stop-block">
+        <div class="s-head">⛔ Pseudo-labeling failure mode</div>
+        Pseudo-labeled rows share feature manifold with held-out train folds. The model sees deployment-like patterns during retraining — OOF improves artificially. Evaluation on a truly held-out set reveals the truth.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑫ DIAGNOSIS -->
+  <div class="phase" id="phase-12">
+    <div class="phase-header" onclick="togglePhase('phase-12')">
+      <span class="phase-num">12</span>
+      <span class="phase-title">Train / Evaluation Gap Diagnosis</span>
+      <span class="phase-tag tag-check">CHECK</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-12')">✓</div>
+    </div>
+    <div class="phase-body">
+      <ul class="checklist">
+        <li>Measure: OOF score → held-out test set score. Some degradation is expected (typically 0.005–0.015 R²) — the question is whether it is larger than expected.</li>
+        <li>If the gap is larger than expected, investigate distribution shift before any further optimisation.</li>
+        <li>If no held-out test set exists yet, treat OOF as the primary evaluation signal and be conservative about claims of generalisation.</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Dominant feature has unseen categories in evaluation data?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Target encoding falls back to global mean for unseen categories — check how many rows are affected. If &lt;1% of evaluation rows, unseen categories are not the primary driver — look elsewhere.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Run Maximum Mean Discrepancy test across feature subspaces to identify which features drift between train and evaluation data.</div>
+      </div>
+      <p class="section-label">Diagnosing shift without evaluation labels</p>
+      <ul class="checklist">
+        <li>Compare feature prevalence (binary) and category frequency distributions between train and deployment/evaluation data</li>
+        <li>Train a binary classifier: can it predict whether a row is from train or deployment data? AUC &gt; 0.6 = measurable shift present</li>
+        <li>Inspect which features the classifier uses most — those are the shifted dimensions</li>
+        <li>Check whether shift is in the feature marginals or in the feature–target relationship (concept drift)</li>
+      </ul>
+      <div class="rule-block">
+        <strong>Adversarial validation</strong>
+        Training a classifier to distinguish train vs. deployment rows is the most practical tool for diagnosing distribution shift without evaluation labels. Combine with MMD for a statistically grounded picture. If AUC is near 0.5, distributions are similar and shift is unlikely to explain the gap.
+      </div>
+      <div class="rule-block">
+        <strong>OOF as the primary signal</strong>
+        In production settings without a held-out leaderboard, OOF score is your best available proxy for generalisation. Make it trustworthy (see Phase 2) and treat it as the decision-making metric. Track OOF score across every experiment — it is your lab notebook.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑬ MODEL SELECTION -->
+  <div class="phase" id="phase-13">
+    <div class="phase-header" onclick="togglePhase('phase-13')">
+      <span class="phase-num">13</span>
+      <span class="phase-title">Final Model Selection — Choosing What to Ship</span>
+      <span class="phase-tag tag-warn">PITFALL</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-13')">✓</div>
+    </div>
+    <div class="phase-body">
+      <ul class="checklist">
+        <li>Build OOF residual correlation table across all candidate models</li>
+        <li>Select the blend that minimises OOF MSE — not the model with the highest score on any single evaluation sample</li>
+        <li>Treat any single evaluation score as a noisy estimate — ±0.003 R² variance is normal at typical holdout set sizes. Never optimise against it directly.</li>
+        <li>If a held-out test set exists, reserve it for a single final evaluation — don't use it to iterate</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Does the best-scoring model on your evaluation set have high OOF residual correlation with other ensemble members?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> It may be overfitting the evaluation sample's particular distribution — a risk any time evaluation data is small or non-representative. Prefer the diversity-optimised blend over the evaluation-optimised one for deployment.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> The top-scoring model is genuinely stronger. High weight in the blend is justified.</div>
+      </div>
+      <div class="decision-block">
+        <div class="q">? Is deployment data likely to differ from training data over time?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Prefer models with lower variance over those with marginally better point estimates. Diversity-weighted ensembles, models with ordered TE (CatBoost), and regularised linear stacking all tend to degrade more gracefully under distribution drift.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Optimise for OOF MSE directly. The evaluation and deployment distributions are exchangeable.</div>
+      </div>
+      <div class="rule-block">
+        <strong>The two-candidate rule</strong>
+        Always select two final candidates: the OOF-optimal blend and the simplest model within 0.005 of it. The simpler model is easier to maintain, explain, monitor, and retrain. If the gap is small, default to the simpler one unless you have a strong reason not to.
+      </div>
+      <div class="rule-block">
+        <strong>Avoiding evaluation overfitting</strong>
+        Every time you look at a held-out evaluation score and make a modelling decision based on it, you're implicitly fitting to that score. Keep a strict count of how many times you've used it. More than 5–10 looks at the same holdout set makes it a de facto part of training.
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-connector">│</div>
+
+  <!-- ⑭ CEILING ANALYSIS -->
+  <div class="phase" id="phase-14">
+    <div class="phase-header" onclick="togglePhase('phase-14')">
+      <span class="phase-num">14</span>
+      <span class="phase-title">Ceiling Analysis — Know When to Stop</span>
+      <span class="phase-tag tag-gate">GATE</span>
+      <span class="phase-chevron">▶</span>
+      <div class="done-check" onclick="toggleDone(event,'phase-14')">✓</div>
+    </div>
+    <div class="phase-body">
+      <div class="decision-block">
+        <div class="q">? Gap between best OOF and theoretical ceiling &lt; 0.05?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> You're in noise-floor territory. Remaining gap is irreducible measurement noise. Stop optimising — ship it.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Real headroom exists. Estimate how much is irreducible vs closable.</div>
+      </div>
+      <p class="section-label">Estimating irreducible vs closable gap</p>
+      <ul class="checklist">
+        <li>Fit best model to non-duplicate rows only — compare RMSE to full-data model</li>
+        <li>Plot residual distribution: is variance uniform or does it scale with group mean?</li>
+        <li>Inspect within-group residuals for non-duplicate rows — if large, noise is distributed across full dataset</li>
+      </ul>
+      <div class="decision-block">
+        <div class="q">? Residual variance scales with group mean (heteroscedasticity)?</div>
+        <div class="branch branch-yes"><span class="branch-label">YES</span> Group-specific transformations or WLS may help. The gap has structure — it's partially closable.</div>
+        <div class="branch branch-no"><span class="branch-label">NO</span> Noise is uniform — gap is closable with better feature engineering or model architecture.</div>
+      </div>
+      <div class="rule-block">
+        <strong>The simplest model test</strong>
+        Before concluding you need more complexity, ask: does the simplest model that correctly handles the dominant feature already represent the performance ceiling? If a plain GBM with ordinal encoding and log(y) is within 0.005 of your best ensemble, complexity was never the constraint.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     TAB 2 — ALGORITHMS
+════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-algos">
+<div class="algo-container">
+
+  <div class="algo-toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="algoSearch" placeholder="Search algorithms..." oninput="renderAlgos()">
+    </div>
+    <div class="algo-filters" id="algoFilters">
+      <button class="filter-btn active" data-cat="all" onclick="setAlgoFilter('all',this)">All</button>
+      <button class="filter-btn" data-cat="tree" onclick="setAlgoFilter('tree',this)">Tree-based</button>
+      <button class="filter-btn" data-cat="linear" onclick="setAlgoFilter('linear',this)">Linear</button>
+      <button class="filter-btn" data-cat="bayesian" onclick="setAlgoFilter('bayesian',this)">Bayesian</button>
+      <button class="filter-btn" data-cat="instance" onclick="setAlgoFilter('instance',this)">Instance-based</button>
+      <button class="filter-btn" data-cat="neural" onclick="setAlgoFilter('neural',this)">Neural</button>
+      <button class="filter-btn" data-cat="kernel" onclick="setAlgoFilter('kernel',this)">Kernel</button>
+    </div>
+    <span class="algo-count" id="algoCount"></span>
+  </div>
+
+  <div class="algo-grid" id="algoGrid"></div>
+  <div class="algo-empty" id="algoEmpty" style="display:none;">No algorithms match — try a different search or filter.</div>
+
+</div>
+</div>
+
+<script>
+/* ── TAB SWITCHING ── */
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('workflowControls').style.display = tab === 'workflow' ? 'flex' : 'none';
+  document.getElementById('algoControls').style.display   = tab === 'algos'    ? 'flex' : 'none';
+}
+
+/* ── WORKFLOW FUNCTIONS ── */
+function togglePhase(id) { document.getElementById(id).classList.toggle('is-open'); }
+
+function toggleDone(event, id) {
+  event.stopPropagation();
+  document.getElementById(id).classList.toggle('is-done');
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = document.querySelectorAll('.phase.is-done').length;
+  document.getElementById('progressFill').style.width = (done / 14 * 100) + '%';
+  document.getElementById('progressLabel').textContent = done + ' / 14';
+}
+
+function expandAll()    { document.querySelectorAll('.phase').forEach(p => p.classList.add('is-open')); }
+function collapseAll()  { document.querySelectorAll('.phase').forEach(p => p.classList.remove('is-open')); }
+function resetProgress(){ document.querySelectorAll('.phase').forEach(p => p.classList.remove('is-done')); updateProgress(); }
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('tab-workflow').classList.contains('active')) {
+    if (e.key === 'e') expandAll();
+    if (e.key === 'c') collapseAll();
+  }
+});
+
+/* ── ALGORITHM DATA ── */
+const ALGOS = [
+  {
+    name: "Gradient Boosting (sklearn GBM)",
+    cat: "tree", tags: ["tree","ensemble"],
+    icon: "GBM", iconBg: "#0d3d2a", iconColor: "#10b981",
+    desc: "Sequential ensemble of shallow trees, each correcting residuals of the last.",
+    strengths: "Strong out-of-the-box on tabular data. Sequential structure reconstructs group sub-structure from ordinal-encoded categoricals via repeated splits. Interpretable feature importance.",
+    weaknesses: "Slow on large datasets. Sensitive to lr / n_estimators coupling — pathological regions exist. No native categorical handling.",
+    useWhen: "Dominant categorical signal + ordinal encoding outperforms TE. Small-to-medium datasets (n < 100k). When interpretability matters. Often the per-model performance ceiling.",
+    libs: [
+      {name:"sklearn GBM", note:"Reference implementation. Slow but predictable. Best for n < 50k."},
+      {name:"HistGBM", note:"sklearn histogram-based variant. Faster, native categorical support."},
+      {name:"LightGBM", note:"Leaf-wise growth, histogram binning, native categoricals. Fastest for large data."},
+      {name:"XGBoost", note:"Level-wise growth, strong L1/L2 regularisation. Robust defaults."},
+      {name:"CatBoost", note:"Ordered target encoding built in. Best for many categoricals. Minimal leakage risk."},
+    ]
+  },
+  {
+    name: "Random Forest",
+    cat: "tree", tags: ["tree","ensemble"],
+    icon: "RF", iconBg: "#0d3d2a", iconColor: "#10b981",
+    desc: "Bagging ensemble of deep, independent decision trees with random feature subsets.",
+    strengths: "Robust to overfitting via variance reduction from averaging. Parallelisable. Stable feature importance. Good uncertainty estimates via tree variance.",
+    weaknesses: "Weaker than boosting on most tabular benchmarks. Memory-heavy. Poor extrapolation beyond training range. Cannot learn from residuals across trees.",
+    useWhen: "You need a robust baseline fast. Dataset has many noisy features. You want prediction intervals. Useful as a diversity-adding ensemble member.",
+    libs: [
+      {name:"sklearn RF", note:"RandomForestRegressor. ExtraTreesRegressor is a faster, more random variant — useful blend candidate."},
+      {name:"ranger (R)", note:"Fastest RF implementation. Relevant for cross-language benchmarking."},
+    ]
+  },
+  {
+    name: "Ridge / Lasso / ElasticNet",
+    cat: "linear", tags: ["linear"],
+    icon: "LIN", iconBg: "#0d2a3d", iconColor: "#38bdf8",
+    desc: "Linear regression with L2 (Ridge), L1 (Lasso), or combined (ElasticNet) regularisation.",
+    strengths: "Extremely fast. Interpretable coefficients. Ridge is stable with correlated features. Lasso does automatic feature selection. Structurally different residuals from tree models — strong blend diversity.",
+    weaknesses: "Cannot capture non-linear interactions without explicit FE. OHE required for categoricals. Cannot model heterogeneous group signal cleanly.",
+    useWhen: "Signal is approximately linear. Very high-dimensional data (p >> n). As a diversity-adding blend component — residuals are structurally different from tree models. As a stacking meta-learner.",
+    libs: [
+      {name:"sklearn", note:"Ridge, Lasso, ElasticNet, BayesianRidge. Use RidgeCV/LassoCV for automatic alpha search."},
+      {name:"glmnet (R)", note:"Reference implementation. Faster for large regularisation paths."},
+    ]
+  },
+  {
+    name: "K-Nearest Neighbours",
+    cat: "instance", tags: ["instance"],
+    icon: "KNN", iconBg: "#3d1a0a", iconColor: "#f97316",
+    desc: "Predicts by averaging y values of the k most similar training instances.",
+    strengths: "Non-parametric — adapts to local structure. Handles multimodal distributions naturally. Theoretically unbiased as n → ∞. Excellent intuition.",
+    weaknesses: "Prediction time scales with training set size. Curse of dimensionality — distance metrics degrade fast in high dimensions. Sensitive to irrelevant features.",
+    useWhen: "Low-dimensional feature space after dimensionality reduction. Prototype or sanity check. When local neighbourhood structure is genuinely meaningful. Not recommended here without aggressive feature selection first.",
+    libs: [
+      {name:"sklearn KNN", note:"KNeighborsRegressor. BallTree or KD-tree index. Use BallTree for high dims."},
+      {name:"faiss", note:"Facebook's fast approximate NN. For large-scale where exact KNN is too slow."},
+      {name:"annoy", note:"Spotify's approximate NN. Good for n > 1M."},
+    ]
+  },
+  {
+    name: "Support Vector Regression",
+    cat: "kernel", tags: ["kernel"],
+    icon: "SVR", iconBg: "#1e1a0a", iconColor: "#fbbf24",
+    desc: "Finds a hyperplane (or kernel-mapped surface) that fits within an ε-tube around training points.",
+    strengths: "Effective in high-dimensional spaces. Kernel trick enables non-linear boundaries without explicit FE. Only support vectors affect prediction — sparse representation.",
+    weaknesses: "Scales badly with n — training is O(n²) to O(n³). Requires feature scaling. Hyperparameter sensitivity (C, ε, γ). Not interpretable. GBMs almost always outperform on tabular data.",
+    useWhen: "n < 10k and you've exhausted tree-based options. Text/sparse features (linear kernel). Rarely the right choice for this problem class.",
+    libs: [
+      {name:"sklearn SVR", note:"SVR and LinearSVR. LinearSVR is much faster — use for large n."},
+      {name:"libsvm", note:"The underlying C library sklearn wraps. Relevant for language-agnostic use."},
+    ]
+  },
+  {
+    name: "Bayesian Ridge / ARD",
+    cat: "bayesian", tags: ["bayesian","linear"],
+    icon: "BAY", iconBg: "#1e0a3d", iconColor: "#a78bfa",
+    desc: "Bayesian linear regression with priors on weights. ARD assigns per-feature shrinkage automatically.",
+    strengths: "Full posterior over predictions — native uncertainty quantification. Automatic regularisation without cross-validating α. ARD performs automatic feature selection. No overfitting to a specific regularisation strength.",
+    weaknesses: "Still linear — no non-linear interactions without FE. Slower than Ridge. Gaussian priors not suited to heavy-tailed targets without transformation.",
+    useWhen: "Uncertainty quantification needed alongside point estimates. High-dimensional data where per-feature relevance matters. When you want principled regularisation without hyperparameter search.",
+    libs: [
+      {name:"sklearn", note:"BayesianRidge, ARDRegression. Both production-ready."},
+      {name:"PyMC", note:"Full Bayesian linear model with custom priors. More flexible, requires probabilistic programming knowledge."},
+    ]
+  },
+  {
+    name: "Gaussian Process Regression",
+    cat: "bayesian", tags: ["bayesian","kernel"],
+    icon: "GP", iconBg: "#1e0a3d", iconColor: "#a78bfa",
+    desc: "Non-parametric Bayesian method placing a prior over functions, updated with observed data.",
+    strengths: "Full predictive distribution — best-in-class uncertainty quantification. Can encode domain knowledge via kernel choice. Exact interpolation of training points.",
+    weaknesses: "O(n³) training and O(n²) memory — infeasible beyond n ≈ 5,000. Kernel selection is critical and non-trivial. Degrades badly in high dimensions.",
+    useWhen: "n < 2,000 and uncertainty estimates are critical. Scientific modelling with a physically-motivated kernel. Surrogate modelling in Bayesian optimisation. Use GPyTorch for larger n.",
+    libs: [
+      {name:"sklearn GPR", note:"GaussianProcessRegressor. Exact inference, impractical above n ≈ 5k."},
+      {name:"GPyTorch", note:"PyTorch-based, GPU-accelerated, sparse inducing point approximations. Scales to n ≈ 100k."},
+      {name:"GPflow", note:"TensorFlow-based. Similar to GPyTorch. Better for custom kernel research."},
+    ]
+  },
+  {
+    name: "Hierarchical Bayesian Model",
+    cat: "bayesian", tags: ["bayesian"],
+    icon: "HB", iconBg: "#1e0a3d", iconColor: "#a78bfa",
+    desc: "Probabilistic model with group-level and individual-level parameters, sharing information across groups.",
+    strengths: "Purpose-built for datasets with a dominant grouping variable. Partial pooling — small groups borrow strength from the global distribution. Full posterior over group effects. Genuinely different inductive bias from GBMs.",
+    weaknesses: "Requires probabilistic programming knowledge (PyMC, Stan). Slow MCMC sampling. Assumes parametric structure unless extended. Harder to iterate with than sklearn.",
+    useWhen: "A dominant categorical feature acts as a grouping variable. Small groups exist and need shrinkage. You want to decompose variance into group-level vs. within-group components. Excellent diversity-adding ensemble member.",
+    libs: [
+      {name:"PyMC", note:"Python. NUTS sampler, ArviZ integration. Best ecosystem for Bayesian DS workflows."},
+      {name:"Stan / cmdstanpy", note:"Faster sampling than PyMC. Steeper learning curve. Reference for publishable work."},
+      {name:"bambi", note:"High-level mixed-effects models in PyMC. Easiest entry point for hierarchical regression."},
+    ]
+  },
+  {
+    name: "Neural Network (MLP)",
+    cat: "neural", tags: ["neural"],
+    icon: "MLP", iconBg: "#3d0a0a", iconColor: "#ef4444",
+    desc: "Multi-layer perceptron — stacked fully connected layers with non-linear activations.",
+    strengths: "Learns arbitrary non-linear interactions without explicit FE. Embedding layers handle high-cardinality categoricals naturally. Scales to very large datasets.",
+    weaknesses: "Rarely beats GBMs on tabular data with n < 100k. Extensive hyperparameter tuning required. Slow to train. Requires normalisation. No native handling of mixed feature types.",
+    useWhen: "n > 100k and high-cardinality categoricals exist (use embeddings). Auxiliary data available for pre-training. Signal is highly non-linear and GBMs have plateaued. On small tabular datasets (n &lt; 50k), a well-tuned GBM will almost always win.",
+    libs: [
+      {name:"PyTorch", note:"Most flexible. Best for custom architectures and research."},
+      {name:"FastAI tabular", note:"Opinionated MLP with entity embeddings. Easiest entry point for tabular neural nets."},
+      {name:"Keras/TF", note:"Production-friendly. Easier deployment via TF Serving."},
+    ]
+  },
+  {
+    name: "TabNet",
+    cat: "neural", tags: ["neural"],
+    icon: "TN", iconBg: "#3d0a0a", iconColor: "#ef4444",
+    desc: "Attention-based neural network for tabular data — sequential attention selects features at each decision step.",
+    strengths: "Interpretable feature selection via attention masks. Can learn sparse feature subsets. Works reasonably on tabular data without extensive tuning.",
+    weaknesses: "Usually beaten by well-tuned GBMs on small tabular datasets. Training is finicky — sensitive to batch size and lr schedule.",
+    useWhen: "Feature-level interpretability needed with a neural approach. Large tabular datasets where tree-based methods have plateaued. Interesting blend candidate due to different inductive bias.",
+    libs: [
+      {name:"pytorch-tabnet", note:"Reference implementation. Reasonable defaults. GitHub: dreamquark-ai/tabnet."},
+      {name:"FastAI tabular", note:"Entity embedding MLP — often more practical than TabNet for most tabular tasks."},
+    ]
+  },
+  {
+    name: "Decision Tree",
+    cat: "tree", tags: ["tree"],
+    icon: "DT", iconBg: "#0d3d2a", iconColor: "#10b981",
+    desc: "Single tree that recursively partitions feature space by the split minimising a criterion (e.g. MSE).",
+    strengths: "Fully interpretable — every decision is readable. Handles mixed types natively. Fast to train and predict. Useful for understanding interaction structure before ensembling.",
+    weaknesses: "High variance — small data changes produce very different trees. Poor generalisation without aggressive pruning. Always outperformed by ensembles.",
+    useWhen: "Interpretability is the primary requirement. Diagnosing what splits the data naturally — use as an EDA tool. Understanding interaction logic for a subset of predictions.",
+    libs: [
+      {name:"sklearn DT", note:"DecisionTreeRegressor. Use max_depth, min_samples_leaf to control variance."},
+    ]
+  },
+  {
+    name: "Stacking / Meta-learning",
+    cat: "tree", tags: ["ensemble","linear"],
+    icon: "STK", iconBg: "#0d3d2a", iconColor: "#10b981",
+    desc: "A meta-learner (often Ridge) trained on OOF predictions of base models, learning optimal combination weights.",
+    strengths: "Learns non-linear combination of base models — more powerful than fixed blend weights. Can weight models differently for different feature space regions. Resistant to blend saturation if meta-learner is expressive.",
+    weaknesses: "Risk of meta-learner overfitting to OOF predictions, especially with few models or small n. Requires careful CV discipline. Adds complexity.",
+    useWhen: "4+ diverse base models exist. Blend weight optimisation is plateauing. Relationship between model errors is non-trivial. Use Ridge or small GBM as meta-learner — keep it simple.",
+    libs: [
+      {name:"sklearn", note:"StackingRegressor. Handles OOF training discipline automatically."},
+      {name:"mlxtend", note:"StackingCVRegressor. More configurable CV strategy per base model."},
+      {name:"vecstack", note:"Lightweight, explicit OOF generation. More transparent than sklearn's abstraction."},
+    ]
+  },
+  {
+    name: "Causal / Structural Model",
+    cat: "bayesian", tags: ["bayesian"],
+    icon: "CAU", iconBg: "#1e0a3d", iconColor: "#a78bfa",
+    desc: "Causal graph-based approach identifying and estimating causal effects rather than predictive associations.",
+    strengths: "Estimates intervention effects — what feature changes would actually move the target, not just correlate with it. Forces explicit causal assumptions. Handles confounders systematically. Moves beyond predictive correlation to actionable insight.",
+    weaknesses: "Requires a causal DAG — expert-specified or learned (error-prone). Not a plug-and-play predictive model. Returns causal effect estimates, not predictive R². High expertise requirement.",
+    useWhen: "The goal is understanding what drives the target, not just predicting it. You want to recommend specific feature changes that would move outcomes. Predictive accuracy has plateaued and you need actionable insight rather than a better point estimate. When stakeholders will ask 'why' and 'what should we change' rather than 'what will happen'.",
+    libs: [
+      {name:"DoWhy", note:"Microsoft Research. Best Python causal inference ecosystem. Integrates with EconML for effect estimation."},
+      {name:"CausalML", note:"Uber's library. Focuses on heterogeneous treatment effects — useful for group-level causal analysis."},
+      {name:"pgmpy", note:"Probabilistic graphical models. For causal DAG specification and Bayesian network learning."},
+    ]
+  },
+];
+
+let algoFilter = 'all';
+
+function tagClass(t) {
+  const m = {tree:'at-tree',linear:'at-linear',bayesian:'at-bayesian',instance:'at-instance',neural:'at-neural',ensemble:'at-ensemble',kernel:'at-kernel'};
+  return m[t] || 'at-tree';
+}
+
+function renderAlgos() {
+  const q = (document.getElementById('algoSearch').value || '').toLowerCase();
+  const filtered = ALGOS.filter(a => {
+    const catOk = algoFilter === 'all' || a.cat === algoFilter || a.tags.includes(algoFilter);
+    const qOk   = !q || a.name.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q) || a.tags.some(t => t.includes(q));
+    return catOk && qOk;
+  });
+
+  const countEl = document.getElementById('algoCount');
+  const headerCountEl = document.getElementById('algoCountHeader');
+  const label = filtered.length + ' of ' + ALGOS.length + ' algorithms';
+  if (countEl) countEl.textContent = label;
+  if (headerCountEl) headerCountEl.textContent = label;
+
+  const grid  = document.getElementById('algoGrid');
+  const empty = document.getElementById('algoEmpty');
+
+  if (!filtered.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  grid.innerHTML = filtered.map((a, i) => `
+    <div class="algo-card" id="ac-${i}">
+      <div class="algo-header" onclick="toggleAlgo(${i})">
+        <div class="algo-icon" style="background:${a.iconBg};color:${a.iconColor};font-size:10px;letter-spacing:0.02em">${a.icon}</div>
+        <div class="algo-meta">
+          <div class="algo-name">${a.name}</div>
+          <div class="algo-desc">${a.desc}</div>
+        </div>
+        <div class="algo-chevron">▶</div>
+      </div>
+      <div class="algo-tags">
+        ${a.tags.map(t => `<span class="algo-tag ${tagClass(t)}">${t}</span>`).join('')}
+      </div>
+      <div class="algo-detail">
+        <div class="detail-section">
+          <div class="detail-label">Use when</div>
+          <div class="use-when-box">${a.useWhen}</div>
+        </div>
+        <div class="detail-section">
+          <div class="sw-grid">
+            <div class="sw-box sw-str"><div class="sw-label">Strengths</div>${a.strengths}</div>
+            <div class="sw-box sw-wk"><div class="sw-label">Weaknesses</div>${a.weaknesses}</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">Libraries</div>
+          <div class="lib-list">
+            ${a.libs.map(l => `<div class="lib-row"><span class="lib-name">${l.name}</span><span class="lib-note">${l.note}</span></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAlgo(i) {
+  document.getElementById('ac-' + i).classList.toggle('is-open');
+}
+
+function setAlgoFilter(cat, btn) {
+  algoFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAlgos();
+}
+
+renderAlgos();
+</script>
+</body>
+</html>
